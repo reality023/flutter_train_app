@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_train_app/constants/app_constants.dart';
+import 'package:flutter_train_app/models/station.dart';
+import 'package:flutter_train_app/widgets/app_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,8 +12,46 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String? departureStation;
-  String? arrivalStation;
+  Station? departureStation;
+  Station? arrivalStation;
+
+  void _selectStation(String type) async {
+    final result = await Get.toNamed(
+      AppConstants.stationListRoute,
+      arguments: {'type': type},
+    );
+
+    if (result != null) {
+      setState(() {
+        if (type == AppConstants.departureType) {
+          departureStation =
+              Station.stations.firstWhere((s) => s.name == result);
+        } else {
+          arrivalStation = Station.stations.firstWhere((s) => s.name == result);
+        }
+      });
+    }
+  }
+
+  void _onSeatSelect() {
+    if (departureStation == null || arrivalStation == null) {
+      AppDialog.showErrorDialog(AppConstants.stationSelectionError);
+      return;
+    }
+
+    if (departureStation?.name == arrivalStation?.name) {
+      AppDialog.showErrorDialog(AppConstants.sameStationError);
+      return;
+    }
+
+    Get.toNamed(
+      AppConstants.seatRoute,
+      arguments: {
+        'departure': departureStation?.name,
+        'arrival': arrivalStation?.name,
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,15 +80,8 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         InkWell(
-                          onTap: () async {
-                            final result = await Get.toNamed('/station-list',
-                                arguments: {'type': '출발역'});
-                            if (result != null) {
-                              setState(() {
-                                departureStation = result as String;
-                              });
-                            }
-                          },
+                          onTap: () =>
+                              _selectStation(AppConstants.departureType),
                           child: Column(
                             children: [
                               const Text(
@@ -59,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                departureStation ?? '선택',
+                                departureStation?.name ?? '선택',
                                 style: const TextStyle(
                                   fontSize: 40,
                                 ),
@@ -73,15 +107,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.grey[400],
                         ),
                         InkWell(
-                          onTap: () async {
-                            final result = await Get.toNamed('/station-list',
-                                arguments: {'type': '도착역'});
-                            if (result != null) {
-                              setState(() {
-                                arrivalStation = result as String;
-                              });
-                            }
-                          },
+                          onTap: () => _selectStation(AppConstants.arrivalType),
                           child: Column(
                             children: [
                               const Text(
@@ -93,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                arrivalStation ?? '선택',
+                                arrivalStation?.name ?? '선택',
                                 style: const TextStyle(
                                   fontSize: 40,
                                 ),
@@ -107,14 +133,11 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              // 좌석 선택 버튼
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: departureStation != null && arrivalStation != null
-                      ? () => Get.toNamed('/seat')
-                      : null,
+                  onPressed: _onSeatSelect,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purple,
                     foregroundColor: Colors.white,

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_train_app/page/home/home_page.dart';
-import 'package:flutter_train_app/page/seat/seat_page.dart';
-import 'package:flutter_train_app/page/station_list/station_list_page.dart';
+import 'package:flutter_train_app/constants/app_constants.dart';
+import 'package:flutter_train_app/pages/home/home_page.dart';
+import 'package:flutter_train_app/pages/seat/seat_page.dart';
+import 'package:flutter_train_app/pages/station_list/station_list_page.dart';
 
 void main() {
   runApp(const MainApp());
@@ -14,19 +15,19 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: '기차 앱',
-      initialRoute: '/',
+      title: AppConstants.appTitle,
+      initialRoute: AppConstants.homeRoute,
       getPages: [
         GetPage(
-          name: '/',
+          name: AppConstants.homeRoute,
           page: () => const HomePage(),
         ),
         GetPage(
-          name: '/seat',
+          name: AppConstants.seatRoute,
           page: () => const SeatPage(),
         ),
         GetPage(
-          name: '/station-list',
+          name: AppConstants.stationListRoute,
           page: () => const StationListPage(),
         ),
       ],
