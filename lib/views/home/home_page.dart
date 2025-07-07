@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_train_app/widgets/app_button.dart';
 import 'package:get/get.dart';
-import 'package:flutter_train_app/pages/station_list/models/station.dart';
+import 'package:flutter_train_app/views/station_list/models/station.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,7 +15,7 @@ class _HomePageState extends State<HomePage> {
 
   void _selectStation(String type) async {
     final result = await Get.toNamed(
-      '/station-list',
+      '/station',
       arguments: {'type': type},
     );
 
@@ -158,9 +157,20 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: AppButton(
-                  text: '좌석 선택',
+                child: ElevatedButton(
                   onPressed: _onSeatSelect,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  child: const Text('좌석 선택'),
                 ),
               ),
             ],
