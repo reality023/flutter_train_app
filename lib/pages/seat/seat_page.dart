@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_train_app/pages/seat/models/seat.dart';
+import 'package:flutter_train_app/widgets/app_button.dart';
 import 'package:get/get.dart';
-import 'package:flutter_train_app/constants/app_constants.dart';
-import 'package:flutter_train_app/models/seat.dart';
-import 'package:flutter_train_app/widgets/app_dialog.dart';
 
 class SeatPage extends StatefulWidget {
   const SeatPage({super.key});
@@ -39,17 +39,47 @@ class _SeatPageState extends State<SeatPage> {
 
   void showBookingConfirmDialog() {
     if (selectedSeats.isEmpty) {
-      AppDialog.showErrorDialog(AppConstants.noSeatSelectedError);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('알림'),
+          content: const Text('좌석을 선택해주세요.'),
+          actions: [
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
       return;
     }
 
-    final formattedSeats =
-        selectedSeats.map((seat) => seat.formattedSeatNumber).join(', ');
+    final formattedSeats = selectedSeats
+        .map((seat) => seat.row.toString() + seat.column)
+        .join(', ');
 
-    AppDialog.showConfirmDialog(
-      title: AppConstants.bookingConfirmTitle,
-      content: '${AppConstants.bookingConfirmContent}$formattedSeats',
-      onConfirm: () => Get.until((route) => route.isFirst),
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('예매 하시겠습니까?'),
+        content: Text('좌석: $formattedSeats'),
+        actions: [
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            child: const Text('취소'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: const Text('확인'),
+            onPressed: () {
+              Navigator.pop(context);
+              Get.until((route) => route.isFirst);
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -199,7 +229,7 @@ class _SeatPageState extends State<SeatPage> {
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 20),
-                    itemCount: Seat.maxRows,
+                    itemCount: 20,
                     itemBuilder: (context, rowIndex) {
                       final row = rowIndex + 1;
                       return Padding(
@@ -245,20 +275,9 @@ class _SeatPageState extends State<SeatPage> {
             child: SizedBox(
               width: double.infinity,
               height: 50,
-              child: ElevatedButton(
+              child: AppButton(
+                text: '예매하기',
                 onPressed: showBookingConfirmDialog,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                child: const Text('예매하기'),
               ),
             ),
           ),

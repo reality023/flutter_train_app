@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_train_app/constants/app_constants.dart';
 import 'package:flutter_train_app/pages/home/home_page.dart';
 import 'package:flutter_train_app/pages/seat/seat_page.dart';
 import 'package:flutter_train_app/pages/station_list/station_list_page.dart';
@@ -15,19 +14,19 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: AppConstants.appTitle,
-      initialRoute: AppConstants.homeRoute,
+      title: '기차 앱',
+      initialRoute: '/',
       getPages: [
         GetPage(
-          name: AppConstants.homeRoute,
+          name: '/',
           page: () => const HomePage(),
         ),
         GetPage(
-          name: AppConstants.seatRoute,
+          name: '/seat',
           page: () => const SeatPage(),
         ),
         GetPage(
-          name: AppConstants.stationListRoute,
+          name: '/station-list',
           page: () => const StationListPage(),
         ),
       ],

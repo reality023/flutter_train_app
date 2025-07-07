@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_train_app/widgets/app_button.dart';
 import 'package:get/get.dart';
-import 'package:flutter_train_app/constants/app_constants.dart';
-import 'package:flutter_train_app/models/station.dart';
-import 'package:flutter_train_app/widgets/app_dialog.dart';
+import 'package:flutter_train_app/pages/station_list/models/station.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,13 +16,13 @@ class _HomePageState extends State<HomePage> {
 
   void _selectStation(String type) async {
     final result = await Get.toNamed(
-      AppConstants.stationListRoute,
+      '/station-list',
       arguments: {'type': type},
     );
 
     if (result != null) {
       setState(() {
-        if (type == AppConstants.departureType) {
+        if (type == '출발역') {
           departureStation =
               Station.stations.firstWhere((s) => s.name == result);
         } else {
@@ -35,17 +34,41 @@ class _HomePageState extends State<HomePage> {
 
   void _onSeatSelect() {
     if (departureStation == null || arrivalStation == null) {
-      AppDialog.showErrorDialog(AppConstants.stationSelectionError);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('알림'),
+          content: const Text('출발역과 도착역을 선택해주세요.'),
+          actions: [
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
       return;
     }
 
     if (departureStation?.name == arrivalStation?.name) {
-      AppDialog.showErrorDialog(AppConstants.sameStationError);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('알림'),
+          content: const Text('출발역과 도착역이 같을 수 없습니다.'),
+          actions: [
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
       return;
     }
 
     Get.toNamed(
-      AppConstants.seatRoute,
+      '/seat',
       arguments: {
         'departure': departureStation?.name,
         'arrival': arrivalStation?.name,
@@ -80,8 +103,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         InkWell(
-                          onTap: () =>
-                              _selectStation(AppConstants.departureType),
+                          onTap: () => _selectStation('출발역'),
                           child: Column(
                             children: [
                               const Text(
@@ -107,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.grey[400],
                         ),
                         InkWell(
-                          onTap: () => _selectStation(AppConstants.arrivalType),
+                          onTap: () => _selectStation('도착역'),
                           child: Column(
                             children: [
                               const Text(
@@ -136,20 +158,9 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton(
+                child: AppButton(
+                  text: '좌석 선택',
                   onPressed: _onSeatSelect,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text('좌석 선택'),
                 ),
               ),
             ],
