@@ -26,7 +26,7 @@ class SeatPage extends GetView<SeatViewModel> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      controller.departureStation,
+                      controller.departureStation.value,
                       style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class SeatPage extends GetView<SeatViewModel> {
                     ),
                     const SizedBox(width: 20),
                     Text(
-                      controller.arrivalStation,
+                      controller.arrivalStation.value,
                       style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -151,7 +151,7 @@ class SeatPage extends GetView<SeatViewModel> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    padding: const EdgeInsets.symmetric(vertical: 0),
                     itemCount: 20,
                     itemBuilder: (context, rowIndex) {
                       final row = rowIndex + 1;
@@ -210,21 +210,24 @@ class SeatPage extends GetView<SeatViewModel> {
   }
 
   Widget _buildSeat(int row, String column) {
-    final seat = controller.allSeats.firstWhere(
-      (s) => s.row == row && s.column == column,
-    );
-    final isSelected = controller.selectedSeats.contains(seat);
+    return Obx(() {
+      final seat = controller.allSeats.firstWhere(
+        (s) => s.row == row && s.column == column,
+      );
 
-    return GestureDetector(
-      onTap: () => controller.toggleSeat(seat),
-      child: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.purple : Colors.grey[300],
-          borderRadius: BorderRadius.circular(8),
+      final isSelected = controller.selectedSeats.contains(seat);
+
+      return GestureDetector(
+        onTap: () => controller.toggleSeat(seat),
+        child: Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.purple : Colors.grey[300],
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

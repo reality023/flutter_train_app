@@ -4,17 +4,19 @@ import 'package:flutter_train_app/views/seat/models/seat.dart';
 import 'package:get/get.dart';
 
 class SeatViewModel extends GetxController {
-  final Set<Seat> selectedSeats = {};
-  late final List<Seat> allSeats;
-  late final String departureStation;
-  late final String arrivalStation;
+  final selectedSeats = <Seat>{}.obs;
+  final allSeats = <Seat>[].obs;
+  final departureStation = ''.obs;
+  final arrivalStation = ''.obs;
 
-  void initState() {
-    allSeats = Seat.generateSeats();
+  @override
+  void onInit() {
+    super.onInit();
+    allSeats.addAll(Seat.generateSeats());
 
     final args = Get.arguments as Map<String, dynamic>?;
-    departureStation = args?['departure'] as String? ?? '선택';
-    arrivalStation = args?['arrival'] as String? ?? '선택';
+    departureStation.value = args?['departure'] as String? ?? '선택';
+    arrivalStation.value = args?['arrival'] as String? ?? '선택';
   }
 
   void toggleSeat(Seat seat) {
@@ -23,6 +25,8 @@ class SeatViewModel extends GetxController {
     } else {
       selectedSeats.add(seat);
     }
+
+    update();
   }
 
   void showBookingConfirmDialog(BuildContext context) {
