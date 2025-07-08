@@ -1,19 +1,73 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_train_app/views/seat/models/seat.dart';
 import 'package:get/get.dart';
 
 class SeatViewModel extends GetxController {
-  final selectedSeat = RxInt(-1);
+  final Set<Seat> selectedSeats = {};
+  late final List<Seat> allSeats;
+  late final String departureStation;
+  late final String arrivalStation;
 
-  void selectSeat(int seatNumber) {
-    selectedSeat.value = seatNumber;
+  void initState() {
+    allSeats = Seat.generateSeats();
+
+    final args = Get.arguments as Map<String, dynamic>?;
+    departureStation = args?['departure'] as String? ?? '선택';
+    arrivalStation = args?['arrival'] as String? ?? '선택';
   }
 
-  bool isSeatSelected(int seatNumber) {
-    return selectedSeat.value == seatNumber;
-  }
-
-  void confirmSeatSelection() {
-    if (selectedSeat.value != -1) {
-      Get.back(result: selectedSeat.value);
+  void toggleSeat(Seat seat) {
+    if (selectedSeats.contains(seat)) {
+      selectedSeats.remove(seat);
+    } else {
+      selectedSeats.add(seat);
     }
+  }
+
+  void showBookingConfirmDialog(BuildContext context) {
+    if (selectedSeats.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('알림'),
+          content: const Text('좌석을 선택해주세요.'),
+          actions: [
+            TextButton(
+              child: const Text('확인'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    final formattedSeats = selectedSeats
+        .map((seat) => seat.row.toString() + seat.column)
+        .join(', ');
+
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('예매 하시겠습니까?'),
+        content: Text('좌석: $formattedSeats'),
+        actions: [
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            child: const Text('취소'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: const Text('확인'),
+            onPressed: () {
+              Navigator.pop(context);
+              Get.until((route) => route.isFirst);
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

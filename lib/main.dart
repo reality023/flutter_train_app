@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: '기차 예매',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
       initialRoute: '/',
