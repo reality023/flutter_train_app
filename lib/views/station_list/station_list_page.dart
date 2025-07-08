@@ -16,27 +16,32 @@ class StationListPage extends GetView<StationListViewModel> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: '역 이름을 입력하세요',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
-              onChanged: controller.searchStations,
-            ),
-          ),
           Expanded(
             child: Obx(
-              () => ListView.separated(
+              () => ListView.builder(
                 itemCount: controller.stations.length,
-                separatorBuilder: (context, index) => const Divider(height: 1),
                 itemBuilder: (context, index) {
                   final station = controller.stations[index];
-                  return ListTile(
-                    title: Text(station.name),
-                    onTap: () => controller.selectStation(station.name),
+                  return Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.grey[300]!,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        station.name,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onTap: () => controller.selectStation(station.name),
+                    ),
                   );
                 },
               ),
