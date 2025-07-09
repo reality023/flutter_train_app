@@ -16,7 +16,11 @@ class _HomePageState extends State<HomePage> {
   void _selectStation(String type) async {
     final result = await Get.toNamed(
       '/station',
-      arguments: {'type': type},
+      arguments: {
+        'type': type,
+        'departure': departureStation?.name,
+        'arrival': arrivalStation?.name
+      },
     );
 
     if (result != null) {

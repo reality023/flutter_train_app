@@ -2,8 +2,26 @@ import 'package:get/get.dart';
 import 'package:flutter_train_app/views/station_list/models/station.dart';
 
 class StationListViewModel extends GetxController {
-  final stations = Station.stations.obs;
+  final RxList<Station> stations = <Station>[].obs;
   final selectedStation = RxString('');
+
+  @override
+  void onInit() {
+    super.onInit();
+    final args = Get.arguments as Map<String, dynamic>?;
+    final arrival = args?['arrival'];
+    final departure = args?['departure'];
+
+    stations.addAll(Station.stations);
+
+    if (arrival != null) {
+      stations.removeWhere((station) => station.name == arrival);
+    }
+
+    if (departure != null) {
+      stations.removeWhere((station) => station.name == departure);
+    }
+  }
 
   void selectStation(String station) {
     selectedStation.value = station;
